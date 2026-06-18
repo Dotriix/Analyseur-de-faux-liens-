@@ -58,7 +58,7 @@ def scan_url():
         details = f"O.R.I.O.N a détecté : {vt_result['detec']} alerte(s). {cl_result['raison']}"
     else:
         verdict = "✅ SÛR ✅"
-        details = "O.R.I.O.N n'a détecté aucune anomalie."
+        details = "\n\nO.R.I.O.N n'a détecté aucune anomalie."
         
     return jsonify({
         "verdict": verdict,
