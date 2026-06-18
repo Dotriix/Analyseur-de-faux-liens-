@@ -38,7 +38,7 @@ def check_checklink(url_to_scan):
     # Si le site est très récent ou contient des mots clés bancaires frauduleux
     mots_cles_arnaque = ["facturation", "prime", "ameli", "caf", "colis", "infractions"]
     if any(mot in url_to_scan.lower() for mot in mots_cles_arnaque):
-        return {"status": "danger", "raison": "Détection d'un mot-clé d'hameçonnage connu par O.R.I.O.N."}
+        return {"status": "danger", "raison": "Détection d'un mot-clé d'hameçonnage connu de sa base de donnees."}
     return {"status": "safe", "raison": "Aucune anomalie visuelle immédiate."}
 
 @app.route('/scan', methods=['POST'])
