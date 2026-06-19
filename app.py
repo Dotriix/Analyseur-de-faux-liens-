@@ -2,6 +2,7 @@ import re
 import requests
 from bs4 import BeautifulSoup
 from flask import Flask, request, jsonify
+from urllib.parse import urlparse
 
 app = Flask(__name__)
 
@@ -35,10 +36,28 @@ def check_virus_total(url_to_scan):
     return {"status": "safe", "detec": 0}
 
 def check_checklink(url_to_scan):
+    # Liste des domaines de confiance
+    domaine_whitelist = ["amazon.fr", "amazon.com", "primevideo.com", "ameli.fr", "caf.fr", "gouv.fr", "impots.gouv.fr"]
+    
+    # 1. Extraction du domaine
+    try:
+        parsed_url = urlparse(url_to_scan)
+        domaine = parsed_url.netloc.lower().replace("www.", "")
+        
+        # Si le domaine est dans la liste blanche, on autorise sans chercher les mots-clés
+        for site in domaine_whitelist:
+            if domaine == site or domaine.endswith("." + site):
+                return {"status": "safe", "raison": "Domaine de confiance reconnu."}
+    except:
+        pass 
+
+    # 2. Analyse des mots-clés (uniquement pour les sites hors liste blanche)
     mots_cles_arnaque = ["facturation", "prime", "ameli", "caf", "colis", "infractions"]
     if any(mot in url_to_scan.lower() for mot in mots_cles_arnaque):
-        return {"status": "danger", "raison": "Détection d'un mot-clé d'hameçonnage."}
+        return {"status": "danger", "raison": "Détection d'un mot-clé d'hameçonnage hors domaine de confiance."}
+        
     return {"status": "safe", "raison": "Aucune anomalie visuelle immédiate."}
+
 
 @app.route('/scan', methods=['POST'])
 def scan_url():
