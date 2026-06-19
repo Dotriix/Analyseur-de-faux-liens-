@@ -21,11 +21,10 @@ def check_virus_total(url_to_scan):
 def check_checklink(url_to_scan):
     domaine_whitelist = ["amazon.fr", "amazon.com", "ameli.fr", "caf.fr", "gouv.fr", "impots.gouv.fr"]
     
-    # 1. Analyse du domaine pour la liste blanche
+    # 1. Analyse du domaine (toujours prioritaire pour éviter les faux positifs)
     try:
         parsed_url = urlparse(url_to_scan)
         domaine = parsed_url.netloc.lower()
-        print(f"DEBUG: Domaine extrait = {domaine}") 
         
         for site in domaine_whitelist:
             if domaine == site or domaine.endswith("." + site):
@@ -33,17 +32,16 @@ def check_checklink(url_to_scan):
     except Exception as e:
         print(f"DEBUG: Erreur urlparse = {e}")
 
-    # 2. Analyse intelligente des mots-clés (avec frontières de mots)
+    # 2. Analyse large des mots-clés (détection maximale)
+    # On cherche le mot n'importe où dans l'URL sans restriction de frontières
     mots_cles_arnaque = ["facturation", "prime", "amende", "vinted", "colis", "urssaf", "caf", "ameli", "infraction"]
     url_basse = url_to_scan.lower()
     
     for mot in mots_cles_arnaque:
-        # \b assure que le mot est entier (ex: bloque 'prime' mais pas 'primetime')
-        if re.search(r'\b' + re.escape(mot) + r'\b', url_basse):
-             return {"status": "danger", "raison": f"Mot-clé détecté : {mot}."}
+        if mot in url_basse:
+             return {"status": "danger", "raison": f"Mot-clé '{mot}' détecté dans l'URL."}
         
     return {"status": "safe", "raison": "Aucune anomalie visuelle immédiate."}
-
 
 
 @app.route('/scan', methods=['POST'])
