@@ -20,10 +20,28 @@ def check_virus_total(url_to_scan):
         return {"status": "error", "detec": 0}
 
 def check_checklink(url_to_scan):
+    # Liste des domaines officiels à ne jamais bloquer
+    domaine_whitelist = ["amazon.fr", "amazon.com", "ameli.fr", "caf.fr", "gouv.fr", "impots.gouv.fr"]
+    
+    # Extraction du nom de domaine
+    try:
+        parsed_url = urlparse(url_to_scan)
+        domaine = parsed_url.netloc.lower()
+    except:
+        domaine = ""
+
+    # Si le domaine est dans la liste blanche, on autorise tout
+    if any(site in domaine for site in domaine_whitelist):
+        return {"status": "safe", "raison": "Domaine de confiance reconnu."}
+
+    # Sinon, on vérifie les mots-clés de danger
     mots_cles_arnaque = ["facturation", "prime", "amende", "vinted", "colis", "urssaf", "caf", "ameli", "infraction"]
+    
     if any(mot in url_to_scan.lower() for mot in mots_cles_arnaque):
-        return {"status": "danger", "raison": "Détection d'un mot-clé d'hameçonnage connu de sa base de données."}
+        return {"status": "danger", "raison": "Détection d'un mot-clé d'hameçonnage hors domaine de confiance."}
+        
     return {"status": "safe", "raison": "Aucune anomalie visuelle immédiate."}
+
 
 @app.route('/scan', methods=['POST'])
 def scan_url():
