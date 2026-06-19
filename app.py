@@ -71,7 +71,7 @@ def scan_url():
     
     # Correction de l'indentation ici (tout doit être bien aligné)
     if vt["status"] == "danger" or cl["status"] == "danger":
-        verdict =        "⚠️ LIEN SUSPECT ⚠️"
+        verdict ="              ⚠️ LIEN SUSPECT ⚠️"
         
         # On personnalise le message
         if vt["status"] == "danger" and cl["status"] == "danger":
@@ -82,7 +82,7 @@ def scan_url():
             details = f"Le système a détecté un contenu suspect : {cl['raison']}"
             
     else:
-        verdict = "              ✅ LIEN SÉCURISÉ ✅"
+        verdict = "             ✅ LIEN SÉCURISÉ ✅"
         details = "\n\nLe système de protection O.R.I.O.N n'a détecté aucune anomalie provenant de ce lien."
         
     return jsonify({"verdict": verdict, "details": details})
