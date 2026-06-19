@@ -82,8 +82,8 @@ def scan_url():
             details = f"Le système a détecté un contenu suspect : {cl['raison']}"
             
     else:
-        verdict = "✅ LIEN SÉCURISÉ ✅"
-        details = "Analyse terminée : Le site ne présente aucune menace connue pour le moment."
+        verdict = "              ✅ LIEN SÉCURISÉ ✅"
+        details = "\n\nLe système O.R.I.O.N n'a détecté aucune anomalie provenant de ce lien."
         
     return jsonify({"verdict": verdict, "details": details})
 
