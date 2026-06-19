@@ -75,7 +75,7 @@ def scan_url():
         
         # On personnalise le message
         if vt["status"] == "danger" and cl["status"] == "danger":
-            details = f"Attention : Ce lien est identifié comme dangereux selon le système de protection O.R.I.O.N ({vt['detec']} alertes)."
+            details = f"\n\nAttention : Ce lien est identifié comme dangereux selon le système de protection O.R.I.O.N ({vt['detec']} alertes)."
         elif vt["status"] == "danger":
             details = f"Ce lien est signalé comme malveillant par {vt['detec']} outils de sécurité mondiaux (VirusTotal)."
         else:
@@ -83,7 +83,7 @@ def scan_url():
             
     else:
         verdict = "            ✅ LIEN SÉCURISÉ ✅"
-        details = "\n\nLe système O.R.I.O.N n'a détecté aucune anomalie provenant de ce lien."
+        details = "\n\nLe système de protection O.R.I.O.N n'a détecté aucune anomalie provenant de ce lien."
         
     return jsonify({"verdict": verdict, "details": details})
 
