@@ -69,20 +69,23 @@ def scan_url():
     vt = check_virus_total(url_to_scan)
     cl = check_checklink(url_to_scan)
     
-        if vt["status"] == "danger" or cl["status"] == "danger":
+    # Correction de l'indentation ici (tout doit être bien aligné)
+    if vt["status"] == "danger" or cl["status"] == "danger":
         verdict = "⚠️ ALERTE DE SÉCURITÉ ⚠️"
         
-        # On personnalise le message selon la source de la menace
+        # On personnalise le message
         if vt["status"] == "danger" and cl["status"] == "danger":
             details = f"Attention : Ce lien est identifié comme dangereux par nos analyses locales et par les experts de VirusTotal ({vt['detec']} alertes)."
         elif vt["status"] == "danger":
             details = f"Ce lien est signalé comme malveillant par {vt['detec']} outils de sécurité mondiaux (VirusTotal)."
         else:
-            details = f"Le système a détecté un contenu suspect : {cl_result['raison']}"
+            details = f"Le système a détecté un contenu suspect : {cl['raison']}"
             
     else:
         verdict = "✅ LIEN SÉCURISÉ ✅"
         details = "Analyse terminée : Le site ne présente aucune menace connue pour le moment."
+        
+    return jsonify({"verdict": verdict, "details": details})
 
 
 # =====================================================================
