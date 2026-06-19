@@ -2,6 +2,8 @@ import re
 import requests
 from bs4 import BeautifulSoup
 from flask import Flask, request, jsonify
+from urllib.parse import urlparse  
+
 
 # UNE SEULE ET UNIQUE APPLICATION FLASK POUR TOUT LE MONDE
 app = Flask(__name__)
@@ -20,27 +22,31 @@ def check_virus_total(url_to_scan):
         return {"status": "error", "detec": 0}
 
 def check_checklink(url_to_scan):
-    # Liste des domaines officiels à ne jamais bloquer
     domaine_whitelist = ["amazon.fr", "amazon.com", "ameli.fr", "caf.fr", "gouv.fr", "impots.gouv.fr"]
     
-    # Extraction du nom de domaine
     try:
         parsed_url = urlparse(url_to_scan)
+        # On récupère le domaine netloc (ex: www.amazon.fr)
         domaine = parsed_url.netloc.lower()
-    except:
-        domaine = ""
+        
+        # DEBUG : Affiche dans tes logs Render ce qu'il voit réellement
+        print(f"DEBUG: Domaine extrait = {domaine}") 
+        
+        # Vérification stricte
+        for site in domaine_whitelist:
+            if site in domaine:
+                return {"status": "safe", "raison": "Domaine de confiance reconnu."}
+    except Exception as e:
+        print(f"DEBUG: Erreur urlparse = {e}")
 
-    # Si le domaine est dans la liste blanche, on autorise tout
-    if any(site in domaine for site in domaine_whitelist):
-        return {"status": "safe", "raison": "Domaine de confiance reconnu."}
-
-    # Sinon, on vérifie les mots-clés de danger
+    # Sinon, on vérifie les mots-clés
     mots_cles_arnaque = ["facturation", "prime", "amende", "vinted", "colis", "urssaf", "caf", "ameli", "infraction"]
     
     if any(mot in url_to_scan.lower() for mot in mots_cles_arnaque):
         return {"status": "danger", "raison": "Détection d'un mot-clé d'hameçonnage hors domaine de confiance."}
         
     return {"status": "safe", "raison": "Aucune anomalie visuelle immédiate."}
+
 
 
 @app.route('/scan', methods=['POST'])
